@@ -3,6 +3,7 @@ const { body, validationResult } = require('express-validator');
 const Website = require('../models/website.model');
 const { auth, subscriptionCheck } = require('../middleware/auth.middleware');
 const { generateVerificationCode } = require('../utils/verification');
+const normalizeUrl = require('normalize-url');
 
 const router = express.Router();
 
@@ -21,7 +22,7 @@ router.post('/',
   auth,
   subscriptionCheck,
   [
-    body('url').isURL().normalizeURL(),
+    body('url').isURL().customSanitizer(value => normalizeUrl(value)),
     body('name').trim().notEmpty(),
     body('platform').isIn(['custom', 'shopify', 'woocommerce', 'wordpress', 'magento'])
   ],

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const app = require('./app');
+const normalizeUrl = require('normalize-url');
 
 dotenv.config();
 
@@ -15,10 +16,7 @@ function getMongoDbSafeUri(uri) {
 
 async function startServer() {
   try {
-    await mongoose.connect(MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(MONGODB_URI);
     console.log('Connected to MongoDB');
     console.log(`MongoDB URI: ${getMongoDbSafeUri(MONGODB_URI)}`);
     const host = process.env.HOST || 'localhost';
