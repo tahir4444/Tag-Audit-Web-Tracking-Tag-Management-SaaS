@@ -1,0 +1,584 @@
+{
+  "info": {
+    "name": "Tag Audit API",
+    "description": "API collection for Tag Audit Software",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.token) {",
+                  "    pm.environment.set('token', jsonData.token);",
+                  "    pm.environment.set('userId', jsonData.user._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\",\n    \"name\": \"John Doe\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.token) {",
+                  "    pm.environment.set('token', jsonData.token);",
+                  "    pm.environment.set('userId', jsonData.user._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "me"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Websites",
+      "item": [
+        {
+          "name": "Add Website",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData._id) {",
+                  "    pm.environment.set('websiteId', jsonData._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"url\": \"https://example.com\",\n    \"name\": \"Example Website\",\n    \"platform\": \"custom\",\n    \"settings\": {\n        \"autoFix\": true,\n        \"notificationEmail\": \"notify@example.com\",\n        \"auditFrequency\": \"weekly\"\n    }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/websites",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "websites"]
+            }
+          }
+        },
+        {
+          "name": "Get All Websites",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/websites",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "websites"]
+            }
+          }
+        },
+        {
+          "name": "Get Website by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/websites/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "websites", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{websiteId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Website",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Updated Website Name\",\n    \"settings\": {\n        \"autoFix\": true,\n        \"notificationEmail\": \"updated@example.com\",\n        \"auditFrequency\": \"daily\"\n    }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/websites/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "websites", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{websiteId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Website",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/websites/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "websites", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{websiteId}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Audits",
+      "item": [
+        {
+          "name": "Start Audit",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData._id) {",
+                  "    pm.environment.set('auditId', jsonData._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"websiteId\": \"{{websiteId}}\",\n    \"options\": {\n        \"checkGTM\": true,\n        \"checkGA4\": true,\n        \"checkClarity\": true,\n        \"checkMetaTags\": true,\n        \"checkScripts\": true\n    }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/audits",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "audits"]
+            }
+          }
+        },
+        {
+          "name": "Get Audit Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/audits/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "audits", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{auditId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Website Audits",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/websites/:websiteId/audits",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "websites", ":websiteId", "audits"],
+              "variable": [
+                {
+                  "key": "websiteId",
+                  "value": "{{websiteId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Generate Report",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"format\": \"pdf\",\n    \"includeIssues\": true,\n    \"includeRecommendations\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/audits/:id/report",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "audits", ":id", "report"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{auditId}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "GTM Integration",
+      "item": [
+        {
+          "name": "Connect GTM",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"websiteId\": \"{{websiteId}}\",\n    \"gtmId\": \"GTM-XXXXXX\",\n    \"accountId\": \"123456789\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/gtm/connect",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "gtm", "connect"]
+            }
+          }
+        },
+        {
+          "name": "Get GTM Tags",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/gtm/:websiteId/tags",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "gtm", ":websiteId", "tags"],
+              "variable": [
+                {
+                  "key": "websiteId",
+                  "value": "{{websiteId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update GTM Tag",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"tagId\": \"tag_id_here\",\n    \"name\": \"Updated Tag Name\",\n    \"type\": \"ga4\",\n    \"parameters\": {\n        \"measurementId\": \"G-XXXXXX\"\n    }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/gtm/:websiteId/tags/:tagId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "gtm", ":websiteId", "tags", ":tagId"],
+              "variable": [
+                {
+                  "key": "websiteId",
+                  "value": "{{websiteId}}"
+                },
+                {
+                  "key": "tagId",
+                  "value": "tag_id_here"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Subscriptions",
+      "item": [
+        {
+          "name": "Create Subscription",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"plan\": \"pro\",\n    \"paymentMethodId\": \"pm_XXXXXX\",\n    \"billingCycle\": \"monthly\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/subscriptions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "subscriptions"]
+            }
+          }
+        },
+        {
+          "name": "Get Current Subscription",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/subscriptions/current",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "subscriptions", "current"]
+            }
+          }
+        },
+        {
+          "name": "Update Subscription",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"plan\": \"enterprise\",\n    \"billingCycle\": \"annual\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/subscriptions/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "subscriptions", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "subscription_id_here"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Cancel Subscription",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/subscriptions/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "subscriptions", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "subscription_id_here"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.test(\"Status code is 200\", function () {",
+          "    pm.response.to.have.status(200);",
+          "});",
+          "",
+          "pm.test(\"Response has correct structure\", function () {",
+          "    var jsonData = pm.response.json();",
+          "    pm.expect(jsonData).to.be.an('object');",
+          "});"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000"
+    }
+  ]
+} 
