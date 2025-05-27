@@ -1,9 +1,10 @@
-const express = require('express');
-const { body, validationResult } = require('express-validator');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const User = require('../models/user.model');
-const { auth } = require('../middleware/auth.middleware');
+import express from 'express';
+import { body, validationResult } from 'express-validator';
+import stripe from 'stripe';
+import User from '../models/user.model.js';
+import { auth } from '../middleware/auth.middleware.js';
 
+const stripeClient = stripe(process.env.STRIPE_SECRET_KEY);
 const router = express.Router();
 
 // Get available subscription plans
@@ -101,9 +102,9 @@ router.post('/create',
       // Create or get Stripe customer
       let customer;
       if (req.user.subscription.stripeCustomerId) {
-        customer = await stripe.customers.retrieve(req.user.subscription.stripeCustomerId);
+        customer = await stripeClient.customers.retrieve(req.user.subscription.stripeCustomerId);
       } else {
-        customer = await stripe.customers.create({
+        customer = await stripeClient.customers.create({
           email: req.user.email,
           payment_method: paymentMethodId,
           invoice_settings: {
@@ -113,7 +114,7 @@ router.post('/create',
       }
 
       // Create subscription
-      const subscription = await stripe.subscriptions.create({
+      const subscription = await stripeClient.subscriptions.create({
         customer: customer.id,
         items: [{ price: process.env[`STRIPE_${planId.toUpperCase()}_PRICE_ID`] }],
         expand: ['latest_invoice.payment_intent']
@@ -146,7 +147,7 @@ router.post('/cancel', auth, async (req, res) => {
     }
 
     // Cancel Stripe subscription
-    await stripe.subscriptions.del(req.user.subscription.stripeSubscriptionId);
+    await stripeClient.subscriptions.del(req.user.subscription.stripeSubscriptionId);
 
     // Update user subscription
     req.user.subscription.status = 'cancelled';
@@ -178,7 +179,7 @@ router.post('/update',
       }
 
       // Update Stripe subscription
-      await stripe.subscriptions.update(req.user.subscription.stripeSubscriptionId, {
+      await stripeClient.subscriptions.update(req.user.subscription.stripeSubscriptionId, {
         items: [{ price: process.env[`STRIPE_${planId.toUpperCase()}_PRICE_ID`] }]
       });
 
@@ -197,7 +198,7 @@ router.post('/update',
 router.get('/status', auth, async (req, res) => {
   try {
     if (req.user.subscription.stripeSubscriptionId) {
-      const subscription = await stripe.subscriptions.retrieve(
+      const subscription = await stripeClient.subscriptions.retrieve(
         req.user.subscription.stripeSubscriptionId
       );
       req.user.subscription.status = subscription.status;
@@ -210,4 +211,4 @@ router.get('/status', auth, async (req, res) => {
   }
 });
 
-module.exports = router; 
+export default router; 

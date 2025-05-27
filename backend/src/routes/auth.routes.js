@@ -1,8 +1,8 @@
-const express = require('express');
-const { body, validationResult } = require('express-validator');
-const jwt = require('jsonwebtoken');
-const User = require('../models/user.model');
-const { auth } = require('../middleware/auth.middleware');
+import express from 'express';
+import { body, validationResult } from 'express-validator';
+import jwt from 'jsonwebtoken';
+import User from '../models/user.model.js';
+import { auth } from '../middleware/auth.middleware.js';
 
 const router = express.Router();
 
@@ -167,4 +167,4 @@ router.post('/change-password', auth,
   }
 );
 
-module.exports = router; 
+export default router; 

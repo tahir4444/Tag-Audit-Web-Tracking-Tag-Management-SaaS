@@ -1,5 +1,5 @@
-const { google } = require('googleapis');
-const { OAuth2Client } = require('google-auth-library');
+import { google } from 'googleapis';
+import { OAuth2Client } from 'google-auth-library';
 
 class GTMService {
   constructor() {
@@ -160,4 +160,4 @@ class GTMService {
   }
 }
 
-module.exports = new GTMService(); 
+export default new GTMService(); 

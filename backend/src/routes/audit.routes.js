@@ -1,8 +1,8 @@
-const express = require('express');
-const { body, validationResult } = require('express-validator');
-const Website = require('../models/website.model');
-const { auth, subscriptionCheck } = require('../middleware/auth.middleware');
-const { performAudit } = require('../services/audit.service');
+import express from 'express';
+import { body, validationResult } from 'express-validator';
+import Website from '../models/website.model.js';
+import { auth, subscriptionCheck } from '../middleware/auth.middleware.js';
+import { performAudit } from '../services/audit.service.js';
 
 const router = express.Router();
 
@@ -157,4 +157,4 @@ router.get('/:auditId/report',
   }
 );
 
-module.exports = router; 
+export default router; 

@@ -1,9 +1,9 @@
-const express = require('express');
-const { body, validationResult } = require('express-validator');
-const Website = require('../models/website.model');
-const { auth, subscriptionCheck } = require('../middleware/auth.middleware');
-const { generateVerificationCode } = require('../utils/verification');
-const normalizeUrl = require('normalize-url');
+import express from 'express';
+import { body, validationResult } from 'express-validator';
+import Website from '../models/website.model.js';
+import { auth, subscriptionCheck } from '../middleware/auth.middleware.js';
+import { generateVerificationCode } from '../utils/verification.js';
+import normalizeUrl from 'normalize-url';
 
 const router = express.Router();
 
@@ -189,4 +189,4 @@ router.post('/:id/verify', auth, async (req, res) => {
   }
 });
 
-module.exports = router; 
+export default router; 

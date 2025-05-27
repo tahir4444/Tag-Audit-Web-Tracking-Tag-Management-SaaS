@@ -1,9 +1,14 @@
-const express = require('express');
-const cors = require('cors');
-const morgan = require('morgan');
-const helmet = require('helmet');
-const compression = require('compression');
-const path = require('path');
+import express from 'express';
+import cors from 'cors';
+import morgan from 'morgan';
+import helmet from 'helmet';
+import compression from 'compression';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Get __dirname equivalent in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -20,10 +25,10 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use('/reports', express.static(path.join(__dirname, '../reports')));
 
 // Import routes
-const authRoutes = require('./routes/auth.routes');
-const websiteRoutes = require('./routes/website.routes');
-const auditRoutes = require('./routes/audit.routes');
-const subscriptionRoutes = require('./routes/subscription.routes');
+import authRoutes from './routes/auth.routes.js';
+import websiteRoutes from './routes/website.routes.js';
+import auditRoutes from './routes/audit.routes.js';
+import subscriptionRoutes from './routes/subscription.routes.js';
 
 // Use routes
 app.use('/api/auth', authRoutes);
@@ -37,4 +42,4 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Something went wrong!' });
 });
 
-module.exports = app; 
+export default app; 

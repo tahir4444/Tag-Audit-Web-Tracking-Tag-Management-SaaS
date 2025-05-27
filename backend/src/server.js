@@ -1,7 +1,7 @@
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-const app = require('./app');
-const normalizeUrl = require('normalize-url');
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import app from './app.js';
+import normalizeUrl from 'normalize-url';
 
 dotenv.config();
 

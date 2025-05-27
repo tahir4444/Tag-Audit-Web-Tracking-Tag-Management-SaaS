@@ -3,10 +3,6 @@
   "version": "1.0.0",
   "description": "Tag Audit Software - Web Tracking and Tag Audit Platform",
   "private": true,
-  "workspaces": [
-    "frontend",
-    "backend"
-  ],
   "scripts": {
     "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
     "start:backend": "cd backend && npm start",
@@ -20,10 +16,10 @@
     "test": "concurrently \"npm run test:backend\" \"npm run test:frontend\"",
     "test:backend": "cd backend && npm test",
     "test:frontend": "cd frontend && npm test",
-    "install:all": "npm install && npm run install:backend && npm run install:frontend",
+    "install:all": "npm run install:backend && npm run install:frontend",
     "install:backend": "cd backend && npm install",
     "install:frontend": "cd frontend && npm install",
-    "clean": "rimraf node_modules && npm run clean:backend && npm run clean:frontend",
+    "clean": "npm run clean:backend && npm run clean:frontend",
     "clean:backend": "cd backend && rimraf node_modules",
     "clean:frontend": "cd frontend && rimraf node_modules"
   },
@@ -36,10 +32,6 @@
   ],
   "author": "",
   "license": "MIT",
-  "devDependencies": {
-    "concurrently": "^8.2.2",
-    "rimraf": "^5.0.5"
-  },
   "engines": {
     "node": ">=18.0.0"
   }
