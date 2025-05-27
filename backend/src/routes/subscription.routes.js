@@ -66,12 +66,20 @@ router.get('/plans', async (req, res) => {
   }
 });
 
+// Get subscription status
+router.get('/status', auth, async (req, res) => {
+  try {
+    res.json({ subscription: req.user.subscription });
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching subscription status' });
+  }
+});
+
 // Create subscription
-router.post('/create',
+router.post('/create', 
   auth,
   [
-    body('planId').isIn(['free', 'basic', 'premium', 'enterprise']),
-    body('paymentMethodId').optional().isString()
+    body('planId').isIn(['free', 'basic', 'premium', 'enterprise'])
   ],
   async (req, res) => {
     try {
@@ -80,60 +88,46 @@ router.post('/create',
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const { planId, paymentMethodId } = req.body;
+      const { planId } = req.body;
 
-      // Handle free plan
-      if (planId === 'free') {
-        req.user.subscription = {
-          plan: 'free',
-          status: 'active',
-          startDate: new Date(),
-          endDate: null
-        };
-        await req.user.save();
-        return res.json({ subscription: req.user.subscription });
+      // Find user by ID and update subscription
+      const user = await User.findById(req.user._id);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
       }
 
-      // Handle paid plans
-      if (!paymentMethodId) {
-        return res.status(400).json({ error: 'Payment method required for paid plans' });
-      }
-
-      // Create or get Stripe customer
-      let customer;
-      if (req.user.subscription.stripeCustomerId) {
-        customer = await stripeClient.customers.retrieve(req.user.subscription.stripeCustomerId);
-      } else {
-        customer = await stripeClient.customers.create({
-          email: req.user.email,
-          payment_method: paymentMethodId,
-          invoice_settings: {
-            default_payment_method: paymentMethodId
-          }
-        });
-      }
-
-      // Create subscription
-      const subscription = await stripeClient.subscriptions.create({
-        customer: customer.id,
-        items: [{ price: process.env[`STRIPE_${planId.toUpperCase()}_PRICE_ID`] }],
-        expand: ['latest_invoice.payment_intent']
-      });
-
-      // Update user subscription
-      req.user.subscription = {
+      // Update user's subscription
+      user.subscription = {
         plan: planId,
         status: 'active',
         startDate: new Date(),
-        endDate: new Date(subscription.current_period_end * 1000),
-        stripeCustomerId: customer.id,
-        stripeSubscriptionId: subscription.id
+        endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
       };
 
-      await req.user.save();
+      // Update max websites based on plan
+      const maxWebsites = {
+        free: 1,
+        basic: 5,
+        premium: 20,
+        enterprise: 100
+      };
+      user.maxWebsites = maxWebsites[planId];
 
-      res.json({ subscription: req.user.subscription });
+      // Save the updated user
+      await user.save();
+
+      console.log('Subscription created:', {
+        userId: user._id,
+        plan: planId,
+        status: 'active'
+      });
+
+      res.json({ 
+        message: 'Subscription created successfully',
+        subscription: user.subscription 
+      });
     } catch (error) {
+      console.error('Error creating subscription:', error);
       res.status(500).json({ error: 'Error creating subscription' });
     }
   }
@@ -142,17 +136,8 @@ router.post('/create',
 // Cancel subscription
 router.post('/cancel', auth, async (req, res) => {
   try {
-    if (!req.user.subscription.stripeSubscriptionId) {
-      return res.status(400).json({ error: 'No active subscription to cancel' });
-    }
-
-    // Cancel Stripe subscription
-    await stripeClient.subscriptions.del(req.user.subscription.stripeSubscriptionId);
-
-    // Update user subscription
     req.user.subscription.status = 'cancelled';
     await req.user.save();
-
     res.json({ subscription: req.user.subscription });
   } catch (error) {
     res.status(500).json({ error: 'Error cancelling subscription' });
@@ -174,17 +159,24 @@ router.post('/update',
 
       const { planId } = req.body;
 
-      if (!req.user.subscription.stripeSubscriptionId) {
-        return res.status(400).json({ error: 'No active subscription to update' });
-      }
+      // Update user's subscription
+      req.user.subscription = {
+        ...req.user.subscription,
+        plan: planId,
+        status: 'active',
+        startDate: new Date(),
+        endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+      };
 
-      // Update Stripe subscription
-      await stripeClient.subscriptions.update(req.user.subscription.stripeSubscriptionId, {
-        items: [{ price: process.env[`STRIPE_${planId.toUpperCase()}_PRICE_ID`] }]
-      });
+      // Update max websites based on plan
+      const maxWebsites = {
+        free: 1,
+        basic: 5,
+        premium: 20,
+        enterprise: 100
+      };
+      req.user.maxWebsites = maxWebsites[planId];
 
-      // Update user subscription
-      req.user.subscription.plan = planId;
       await req.user.save();
 
       res.json({ subscription: req.user.subscription });
@@ -193,22 +185,5 @@ router.post('/update',
     }
   }
 );
-
-// Get subscription status
-router.get('/status', auth, async (req, res) => {
-  try {
-    if (req.user.subscription.stripeSubscriptionId) {
-      const subscription = await stripeClient.subscriptions.retrieve(
-        req.user.subscription.stripeSubscriptionId
-      );
-      req.user.subscription.status = subscription.status;
-      await req.user.save();
-    }
-
-    res.json({ subscription: req.user.subscription });
-  } catch (error) {
-    res.status(500).json({ error: 'Error fetching subscription status' });
-  }
-});
 
 export default router; 

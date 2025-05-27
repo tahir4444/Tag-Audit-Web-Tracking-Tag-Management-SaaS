@@ -3,24 +3,53 @@ import User from '../models/user.model.js';
 
 const auth = async (req, res, next) => {
   try {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
+    const authHeader = req.header('Authorization');
+    console.log('Auth header:', authHeader ? 'Present' : 'Missing');
+    
+    if (!authHeader) {
+      console.log('No Authorization header');
+      return res.status(401).json({ error: 'No authentication token provided' });
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    console.log('Token format check:', token ? 'Valid format' : 'Invalid format');
     
     if (!token) {
-      throw new Error();
+      console.log('No token after Bearer removal');
+      return res.status(401).json({ error: 'No authentication token provided' });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findOne({ _id: decoded.userId });
+    try {
+      console.log('Verifying token...');
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      console.log('Token decoded successfully, userId:', decoded.userId);
+      
+      const user = await User.findOne({ _id: decoded.userId });
+      console.log('User lookup result:', user ? 'Found' : 'Not found');
 
-    if (!user) {
-      throw new Error();
+      if (!user) {
+        console.log('User not found for token');
+        return res.status(401).json({ error: 'User not found' });
+      }
+
+      req.token = token;
+      req.user = user;
+      console.log('Auth successful for user:', user.email);
+      next();
+    } catch (jwtError) {
+      console.log('JWT verification failed:', {
+        name: jwtError.name,
+        message: jwtError.message,
+        expiredAt: jwtError.expiredAt
+      });
+      return res.status(401).json({ 
+        error: 'Invalid authentication token',
+        details: jwtError.message
+      });
     }
-
-    req.token = token;
-    req.user = user;
-    next();
   } catch (error) {
-    res.status(401).json({ error: 'Please authenticate.' });
+    console.error('Auth middleware error:', error);
+    res.status(401).json({ error: 'Authentication failed' });
   }
 };
 

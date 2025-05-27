@@ -12,13 +12,12 @@ export default defineConfig({
     },
   },
   server: {
-    port: 3000,
+    port: 5173, // Using Vite's default port
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'http://localhost:5000', // Backend is now running on port 5000
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/api/, ''),
       },
       '/uploads': {
         target: 'http://localhost:5000',
