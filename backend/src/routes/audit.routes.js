@@ -6,6 +6,37 @@ import { performAudit } from '../services/audit.service.js';
 
 const router = express.Router();
 
+// Get all audits for the current user
+router.get('/', auth, async (req, res) => {
+  try {
+    const websites = await Website.find({ owner: req.user._id });
+    console.log('Found websites:', websites.length);
+    
+    const audits = websites
+      .filter(website => website.lastAudit && website.lastAudit.date) // Only include websites with valid audits
+      .map(website => {
+        const audit = website.lastAudit;
+        return {
+          _id: website._id, // Use website ID as audit ID
+          date: audit.date,
+          status: audit.status,
+          issues: audit.issues || [],
+          website: {
+            _id: website._id,
+            name: website.name,
+            url: website.url
+          }
+        };
+      });
+
+    console.log('Returning audits:', audits.length);
+    res.json(audits);
+  } catch (error) {
+    console.error('Error fetching all audits:', error);
+    res.status(500).json({ error: 'Error fetching audits' });
+  }
+});
+
 // Get all audits for a website
 router.get('/website/:websiteId', auth, async (req, res) => {
   try {
