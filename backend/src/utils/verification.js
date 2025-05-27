@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+import crypto from 'crypto';
 
 /**
  * Generate a unique verification code for website ownership verification
@@ -69,7 +69,7 @@ const verifyDNSRecord = (record, verificationCode) => {
   return record.trim() === `tag-audit-verification=${verificationCode}`;
 };
 
-module.exports = {
+export {
   generateVerificationCode,
   generateMetaTag,
   generateVerificationFile,

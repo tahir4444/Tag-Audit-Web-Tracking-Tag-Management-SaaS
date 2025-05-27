@@ -1,6 +1,6 @@
-const puppeteer = require('puppeteer');
-const cheerio = require('cheerio');
-const axios = require('axios');
+import puppeteer from 'puppeteer';
+import { load } from 'cheerio';
+import axios from 'axios';
 
 /**
  * Perform a tag audit on a website
@@ -20,7 +20,7 @@ const performAudit = async (website) => {
 
     // Get page content
     const content = await page.content();
-    const $ = cheerio.load(content);
+    const $ = load(content);
 
     // Check for GTM
     const gtmIssues = await checkGTM($, website);
@@ -232,6 +232,11 @@ const checkTagPlacement = ($) => {
   return issues;
 };
 
-module.exports = {
-  performAudit
+export {
+  performAudit,
+  checkGTM,
+  checkGA4,
+  checkMicrosoftClarity,
+  checkDuplicateTags,
+  checkTagPlacement
 }; 

@@ -1,4 +1,4 @@
-const axios = require('axios');
+import axios from 'axios';
 
 class CMSService {
   constructor() {
@@ -253,4 +253,4 @@ class CMSService {
   }
 }
 
-module.exports = new CMSService(); 
+export default new CMSService(); 

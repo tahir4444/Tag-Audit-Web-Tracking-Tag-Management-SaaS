@@ -2,6 +2,7 @@
   "name": "tag-audit-backend",
   "version": "1.0.0",
   "description": "Backend for Tag Audit Software",
+  "type": "module",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

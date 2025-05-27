@@ -1,7 +1,12 @@
-const PDFDocument = require('pdfkit');
-const { createObjectCsvWriter } = require('csv-writer');
-const fs = require('fs');
-const path = require('path');
+import PDFDocument from 'pdfkit';
+import { createObjectCsvWriter } from 'csv-writer';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Get __dirname equivalent in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 class ReportService {
   constructor() {
@@ -127,4 +132,4 @@ class ReportService {
   }
 }
 
-module.exports = new ReportService(); 
+export default new ReportService(); 

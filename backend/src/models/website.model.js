@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const websiteSchema = new mongoose.Schema({
   url: {
@@ -121,4 +121,4 @@ websiteSchema.index({ owner: 1, url: 1 }, { unique: true });
 
 const Website = mongoose.model('Website', websiteSchema);
 
-module.exports = Website; 
+export default Website; 
