@@ -49,7 +49,11 @@ const Websites = () => {
   const queryClient = useQueryClient();
   const theme = useTheme();
 
-  const { data: websites = [], isLoading, error: fetchError } = useQuery({
+  const {
+    data: websites = [],
+    isLoading,
+    error: fetchError,
+  } = useQuery({
     queryKey: ['websites'],
     queryFn: async () => {
       try {
@@ -59,8 +63,8 @@ const Websites = () => {
         }
         const response = await axios.get('/websites', {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         });
         return response.data.websites || [];
       } catch (error) {
@@ -81,8 +85,8 @@ const Websites = () => {
       }
       const response = await axios.post('/websites', data, {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
       return response.data;
     },
@@ -107,8 +111,8 @@ const Websites = () => {
       }
       await axios.delete(`/websites/${id}`, {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
     },
     onSuccess: () => {
@@ -127,13 +131,15 @@ const Websites = () => {
       if (!token) {
         throw new Error('No authentication token found');
       }
-      const response = await axios.post(`/api/audits/start`, {
-        websiteId: websiteId
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
+      const response = await axios.post(
+        `/api/audits/website/${websiteId}/start`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      });
+      );
       return response.data;
     },
     onSuccess: (data, websiteId) => {
@@ -163,36 +169,42 @@ const Websites = () => {
 
   if (isLoading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="60vh"
+      >
         <CircularProgress />
       </Box>
     );
   }
 
   return (
-    <Box 
-      sx={{ 
+    <Box
+      sx={{
         p: { xs: 2, sm: 3, md: 4 },
         minHeight: 'calc(100vh - 64px)', // Subtract AppBar height
         width: '100%',
-        maxWidth: '1600px',
+        maxWidth: '100%',
         mx: 'auto',
+        overflow: 'hidden',
       }}
     >
-      <Box 
-        display="flex" 
-        justifyContent="space-between" 
-        alignItems="center" 
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
         mb={4}
         sx={{
           flexDirection: { xs: 'column', sm: 'row' },
           gap: { xs: 2, sm: 0 },
         }}
       >
-        <Typography 
-          variant="h4" 
-          sx={{ 
-            fontWeight: 700, 
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: 700,
             color: theme.palette.primary.main,
             fontSize: { xs: '1.75rem', sm: '2rem', md: '2.5rem' },
           }}
@@ -241,33 +253,37 @@ const Websites = () => {
             mx: { xs: -2, sm: 0 }, // Negative margin on mobile to extend full width
           }}
         >
-          <WebIcon sx={{ 
-            fontSize: { xs: 60, sm: 80 }, 
-            color: theme.palette.primary.main, 
-            mb: { xs: 2, sm: 3 } 
-          }} />
-          <Typography 
-            variant="h4" 
-            gutterBottom 
-            sx={{ 
+          <WebIcon
+            sx={{
+              fontSize: { xs: 60, sm: 80 },
+              color: theme.palette.primary.main,
+              mb: { xs: 2, sm: 3 },
+            }}
+          />
+          <Typography
+            variant="h4"
+            gutterBottom
+            sx={{
               fontWeight: 600,
               fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
             }}
           >
             No Websites Added Yet
           </Typography>
-          <Typography 
-            variant="h6" 
-            color="textSecondary" 
-            paragraph 
-            sx={{ 
-              maxWidth: '600px', 
+          <Typography
+            variant="h6"
+            color="textSecondary"
+            paragraph
+            sx={{
+              maxWidth: '600px',
               mb: { xs: 3, sm: 4 },
               fontSize: { xs: '1rem', sm: '1.1rem' },
               px: { xs: 2, sm: 0 },
             }}
           >
-            Start by adding your first website to begin tracking and auditing tags. We'll help you monitor and optimize your website's performance.
+            Start by adding your first website to begin tracking and auditing
+            tags. We'll help you monitor and optimize your website's
+            performance.
           </Typography>
           <Button
             variant="contained"
@@ -288,9 +304,9 @@ const Websites = () => {
           </Button>
         </Paper>
       ) : (
-        <Grid container spacing={3}>
+        <Grid container spacing={3} sx={{ width: '100%', m: 0 }}>
           {websites.map((website, index) => (
-            <Grid item xs={12} md={6} lg={4} key={website._id}>
+            <Grid item xs={12} sm={6} md={4} key={website._id}>
               <MotionCard
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -308,14 +324,16 @@ const Websites = () => {
               >
                 <CardContent sx={{ flexGrow: 1, p: { xs: 2, sm: 3 } }}>
                   <Box display="flex" alignItems="center" mb={2}>
-                    <WebIcon sx={{ 
-                      fontSize: { xs: 32, sm: 40 }, 
-                      color: theme.palette.primary.main, 
-                      mr: 2 
-                    }} />
-                    <Typography 
-                      variant="h5" 
-                      sx={{ 
+                    <WebIcon
+                      sx={{
+                        fontSize: { xs: 32, sm: 40 },
+                        color: theme.palette.primary.main,
+                        mr: 2,
+                      }}
+                    />
+                    <Typography
+                      variant="h5"
+                      sx={{
                         fontWeight: 600,
                         fontSize: { xs: '1.1rem', sm: '1.25rem' },
                       }}
@@ -323,11 +341,11 @@ const Websites = () => {
                       {website.name}
                     </Typography>
                   </Box>
-                  
+
                   <Box display="flex" alignItems="center" mb={1}>
                     <LanguageIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                    <Typography 
-                      color="textSecondary" 
+                    <Typography
+                      color="textSecondary"
                       noWrap
                       sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
                     >
@@ -337,7 +355,7 @@ const Websites = () => {
 
                   <Box display="flex" alignItems="center" mb={1}>
                     <CodeIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                    <Typography 
+                    <Typography
                       color="textSecondary"
                       sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
                     >
@@ -348,11 +366,12 @@ const Websites = () => {
                   {website.lastAudit && (
                     <Box display="flex" alignItems="center">
                       <AssessmentIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                      <Typography 
+                      <Typography
                         color="textSecondary"
                         sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
                       >
-                        Last Audit: {new Date(website.lastAudit.date).toLocaleDateString()}
+                        Last Audit:{' '}
+                        {new Date(website.lastAudit.date).toLocaleDateString()}
                       </Typography>
                     </Box>
                   )}
@@ -432,22 +451,22 @@ const Websites = () => {
         </Grid>
       )}
 
-      <Dialog 
-        open={open} 
-        onClose={() => setOpen(false)} 
-        maxWidth="sm" 
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        maxWidth="sm"
         fullWidth
         PaperProps={{
           sx: {
             borderRadius: 2,
             p: { xs: 1, sm: 2 },
-          }
+          },
         }}
       >
         <DialogTitle>
-          <Typography 
-            variant="h5" 
-            sx={{ 
+          <Typography
+            variant="h5"
+            sx={{
               fontWeight: 600,
               fontSize: { xs: '1.25rem', sm: '1.5rem' },
             }}
@@ -535,4 +554,4 @@ const Websites = () => {
   );
 };
 
-export default Websites; 
+export default Websites;

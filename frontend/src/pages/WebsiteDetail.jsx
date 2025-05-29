@@ -24,11 +24,16 @@ const WebsiteDetail = () => {
   const { id } = useParams();
   const [error, setError] = useState('');
   const queryClient = useQueryClient();
+  const token = localStorage.getItem('token');
 
   const { data: website, isLoading: websiteLoading } = useQuery({
     queryKey: ['website', id],
     queryFn: async () => {
-      const response = await axios.get(`/api/websites/${id}`);
+      const response = await axios.get(`/api/websites/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       return response.data;
     },
   });
@@ -36,14 +41,26 @@ const WebsiteDetail = () => {
   const { data: audits, isLoading: auditsLoading } = useQuery({
     queryKey: ['audits', id],
     queryFn: async () => {
-      const response = await axios.get(`/api/audits/website/${id}`);
+      const response = await axios.get(`/api/audits/website/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       return response.data;
     },
   });
 
   const startAudit = useMutation({
     mutationFn: async () => {
-      const response = await axios.post(`/api/audits/start`, { websiteId: id });
+      const response = await axios.post(
+        `/api/audits/website/${id}/start`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       return response.data;
     },
     onSuccess: () => {
@@ -56,7 +73,12 @@ const WebsiteDetail = () => {
 
   if (websiteLoading || auditsLoading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="60vh"
+      >
         <CircularProgress />
       </Box>
     );
@@ -146,7 +168,7 @@ const WebsiteDetail = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {audits?.map((audit) => (
+                  {(Array.isArray(audits) ? audits : []).map((audit) => (
                     <TableRow key={audit._id}>
                       <TableCell>
                         {new Date(audit.createdAt).toLocaleDateString()}
@@ -165,7 +187,10 @@ const WebsiteDetail = () => {
                         <Button
                           size="small"
                           onClick={() =>
-                            window.open(`/api/audits/${audit._id}/report`, '_blank')
+                            window.open(
+                              `/api/audits/${audit._id}/report`,
+                              '_blank'
+                            )
                           }
                         >
                           View Report
@@ -183,4 +208,4 @@ const WebsiteDetail = () => {
   );
 };
 
-export default WebsiteDetail; 
+export default WebsiteDetail;
