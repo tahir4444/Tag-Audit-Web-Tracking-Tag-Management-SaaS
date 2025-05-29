@@ -132,7 +132,7 @@ const Websites = () => {
         throw new Error('No authentication token found');
       }
       const response = await axios.post(
-        `/api/audits/website/${websiteId}/start`,
+        `/audits/website/${websiteId}/start`,
         {},
         {
           headers: {
